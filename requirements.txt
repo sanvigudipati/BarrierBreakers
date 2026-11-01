@@ -1,0 +1,6 @@
+pandas
+numpy
+scikit-learn
+joblib
+praat-parselmouth
+streamlit>=1.40

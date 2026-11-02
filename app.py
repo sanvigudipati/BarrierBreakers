@@ -6,7 +6,7 @@ st.title("🎙️ Parkinson's Voice Screening")
 st.caption("Research prototype - NOT a medical diagnosis.")
 
 @st.cache_resource
-def load(): return joblib.load("model.joblib")
+def load(): return joblib.load("model_figshare.joblib")
 
 st.write("Record or upload a **sustained 'aaah'** (about 5 seconds, steady pitch, quiet room).")
 audio = st.audio_input("Record") or st.file_uploader("...or upload a WAV file", type=["wav"])
@@ -17,14 +17,14 @@ if audio:
     try:
         feats = extract(path)
         p = float(load().predict_proba(pd.DataFrame([feats])[FEATURE_COLS])[0, 1])
-        st.subheader(f"Voice-pattern risk score: {p:.0%}")
+        st.subheader(f"Voice-pattern score: {p:.0%}")
         st.progress(p)
-        if p >= 0.7:   st.warning("Voice markers resemble Parkinson's samples. Consider seeing a neurologist.")
+        if p >= 0.7:   st.warning("Voice markers resemble Parkinson's samples in our dataset. This is not a diagnosis; consider discussing it with a doctor.")
         elif p >= 0.4: st.info("Inconclusive. Re-record in a quieter setting and compare.")
-        else:          st.success("Voice markers look typical.")
+        else:          st.success("Voice markers look typical for our dataset.")
         with st.expander("Extracted acoustic biomarkers"):
             st.dataframe(pd.Series(feats, name="value"))
     except Exception as e:
         st.error(str(e))
 st.divider()
-st.caption("Screening aid only. Trained on 31 speakers (UCI); not clinically validated.")
+st.caption("Screening aid only. Trained on 81 phone recordings (Figshare); results are confounded by age and not clinically validated.")
